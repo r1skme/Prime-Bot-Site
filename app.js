@@ -160,7 +160,7 @@ const statsObserver = new IntersectionObserver(
   { threshold: 0.5 }
 );
 
-document.querySelectorAll('.stat-big').forEach(el => statsObserver.observe(el));
+document.querySelectorAll('.stat-big:not(.static-stat)').forEach(el => statsObserver.observe(el));
 
 // ═══════════ HERO COUNTERS ═══════════
 // Animate the mock dashboard counters on load
