@@ -116,7 +116,7 @@ body {
 }
 
 .nav-logo-img {
-  height: 36px;
+  height: 48px;
   width: auto;
   filter: invert(1);
 }
@@ -273,6 +273,30 @@ body {
   color: var(--text-2);
   font-weight: 400;
   margin-bottom: 36px;
+}
+
+/* ── Launch TBA ───────────────────────────── */
+.launch-tba {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  margin-bottom: 40px;
+  backdrop-filter: blur(10px);
+}
+
+.tba-icon {
+  font-size: 1.4rem;
+}
+
+.tba-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: -0.01em;
 }
 
 /* ── Countdown ────────────────────────────── */
@@ -744,6 +768,12 @@ body {
   font-size: 0.82rem;
   color: var(--text-2);
   font-weight: 500;
+}
+
+.static-stat {
+  background: linear-gradient(135deg, var(--text), var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* ═══════════ CTA ═══════════ */
