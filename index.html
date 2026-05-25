@@ -1,410 +1,313 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prime Market Bot</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Inter, Arial, sans-serif;
-      background: #050506;
-      color: #f5f5f7;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at 70% 10%, rgba(255,255,255,.08), transparent 30%),
-        radial-gradient(circle at 20% 30%, rgba(120,120,255,.08), transparent 30%);
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    .page {
-      width: min(1180px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 32px 0 60px;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 82px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      font-weight: 800;
-      letter-spacing: .04em;
-      font-size: 22px;
-    }
-
-    .logo-mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #ffffff, #777);
-      display: grid;
-      place-items: center;
-      color: #050506;
-      font-weight: 900;
-    }
-
-    nav {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    nav a {
-      color: #c7c7cc;
-      text-decoration: none;
-      padding: 12px 16px;
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 999px;
-      background: rgba(255,255,255,.035);
-      font-weight: 650;
-      font-size: 14px;
-    }
-
-    nav a.primary {
-      background: #fff;
-      color: #050506;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 34px;
-      align-items: center;
-      margin-bottom: 36px;
-    }
-
-    .badge {
-      width: fit-content;
-      padding: 10px 14px;
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 999px;
-      color: #c9c9d1;
-      background: rgba(255,255,255,.04);
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 24px;
-    }
-
-    h1 {
-      font-size: clamp(46px, 7vw, 86px);
-      line-height: .93;
-      letter-spacing: -0.06em;
-      margin-bottom: 26px;
-    }
-
-    .accent {
-      color: #fff;
-      text-shadow: 0 0 40px rgba(255,255,255,.22);
-    }
-
-    .lead {
-      color: #a7a7b0;
-      font-size: 20px;
-      line-height: 1.55;
-      max-width: 680px;
-      margin-bottom: 30px;
-    }
-
-    .actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 50px;
-      padding: 0 22px;
-      border-radius: 14px;
-      font-weight: 800;
-      text-decoration: none;
-      border: 1px solid rgba(255,255,255,.1);
-    }
-
-    .btn.white {
-      background: #fff;
-      color: #050506;
-    }
-
-    .btn.dark {
-      background: rgba(255,255,255,.05);
-      color: #f5f5f7;
-    }
-
-    .preview {
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 30px;
-      padding: 18px;
-      background: rgba(255,255,255,.035);
-      box-shadow: 0 30px 90px rgba(0,0,0,.45);
-    }
-
-    .app {
-      min-height: 420px;
-      border-radius: 22px;
-      background: #080809;
-      border: 1px solid rgba(255,255,255,.08);
-      padding: 24px;
-    }
-
-    .app-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 28px;
-      color: #aaa;
-      font-weight: 700;
-    }
-
-    .status {
-      padding: 9px 12px;
-      border-radius: 999px;
-      background: rgba(50,255,140,.1);
-      color: #78ffad;
-      border: 1px solid rgba(120,255,173,.16);
-      font-size: 13px;
-    }
-
-    .mini-title {
-      font-size: 34px;
-      letter-spacing: -0.04em;
-      margin-bottom: 12px;
-    }
-
-    .mini-text {
-      color: #96969f;
-      line-height: 1.5;
-      margin-bottom: 24px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .stat, .event {
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.035);
-      border-radius: 18px;
-      padding: 18px;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 32px;
-      margin-bottom: 6px;
-    }
-
-    .stat span, .event p {
-      color: #9d9da7;
-      font-size: 14px;
-    }
-
-    .event h3 {
-      margin-bottom: 8px;
-      font-size: 18px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 36px;
-    }
-
-    .card {
-      padding: 26px;
-      border: 1px solid rgba(255,255,255,.09);
-      border-radius: 24px;
-      background: rgba(255,255,255,.035);
-    }
-
-    .card h3 {
-      font-size: 22px;
-      margin-bottom: 12px;
-    }
-
-    .card p {
-      color: #a7a7b0;
-      line-height: 1.55;
-    }
-
-    .section {
-      margin-top: 70px;
-      padding: 34px;
-      border-radius: 28px;
-      border: 1px solid rgba(255,255,255,.09);
-      background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
-    }
-
-    .section h2 {
-      font-size: clamp(32px, 5vw, 56px);
-      letter-spacing: -0.05em;
-      margin-bottom: 18px;
-    }
-
-    .list {
-      display: grid;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    .list div {
-      padding: 16px 18px;
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 16px;
-      color: #d9d9df;
-      background: rgba(0,0,0,.18);
-    }
-
-    footer {
-      margin-top: 44px;
-      color: #777780;
-      text-align: center;
-    }
-
-    @media (max-width: 900px) {
-      header, .hero {
-        grid-template-columns: 1fr;
-      }
-
-      header {
-        align-items: flex-start;
-        margin-bottom: 50px;
-      }
-
-      nav {
-        justify-content: flex-start;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 520px) {
-      .page {
-        width: min(100% - 24px, 1180px);
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .section {
-        padding: 24px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRIME — Скоро запуск | CS2 Trading Bot</title>
+    <meta name="description" content="PRIME — умный бот для автоматической торговли скинами CS2. Скоро запуск. Авто-торг, защита от демпинга, аналитика.">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="page">
-    <header>
-      <div class="logo">
-        <div class="logo-mark">P</div>
-        <span>PRIME MARKET BOT</span>
-      </div>
-      <nav>
-        <a href="#features">Возможности</a>
-        <a href="#security">Безопасность</a>
-        <a class="primary" href="#start">Скачать</a>
-      </nav>
-    </header>
 
-    <section class="hero">
-      <div>
-        <div class="badge">бот для автоматизации маркета</div>
-        <h1>Контроль цен, сделок и событий в одном месте.</h1>
-        <p class="lead">Prime Market Bot помогает следить за товарами, обновлять цены, видеть рисковые позиции и получать уведомления без ручной рутины.</p>
-        <div class="actions">
-          <a class="btn white" href="#start">Начать использовать</a>
-          <a class="btn dark" href="#features">Посмотреть функции</a>
+<!-- ═══ Particle canvas background ═══ -->
+<canvas id="particles"></canvas>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav" id="nav">
+    <div class="nav-inner">
+        <a href="#" class="nav-brand">
+            <img src="logo.png" alt="PRIME" class="nav-logo-img">
+            <span>PRIME</span>
+        </a>
+        <div class="nav-links">
+            <a href="#features">Возможности</a>
+            <a href="#how">Как работает</a>
+            <a href="#stats">Статистика</a>
         </div>
-      </div>
+        <a href="#cta" class="nav-cta">Скоро запуск</a>
+    </div>
+</nav>
 
-      <div class="preview">
-        <div class="app">
-          <div class="app-top">
-            <span>Главная</span>
-            <span class="status">приложение работает</span>
-          </div>
-          <h2 class="mini-title">Есть рискованные позиции</h2>
-          <p class="mini-text">Некоторые товары могут быть выше Top-1 или требовать проверки лимита.</p>
-          <div class="stats">
-            <div class="stat"><strong>0</strong><span>Активные товары</span></div>
-            <div class="stat"><strong>2</strong><span>Риски по цене</span></div>
-            <div class="stat"><strong>4</strong><span>События сегодня</span></div>
-            <div class="stat"><strong>100%</strong><span>Связь с ботом</span></div>
-          </div>
-          <div class="event">
-            <h3>Последнее событие</h3>
-            <p>Проверка структуры базы: торговля готова, поддержка готова.</p>
-          </div>
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="hero">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+    <div class="hero-glow hero-glow-3"></div>
+
+    <div class="hero-content">
+        <img src="logo.png" alt="PRIME" class="hero-logo" id="hero-logo">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Скоро запуск
         </div>
-      </div>
-    </section>
+        <h1 class="hero-title">
+            Торгуй <span class="gradient-text">умнее.</span><br>
+            Зарабатывай <span class="gradient-text">больше.</span>
+        </h1>
+        <p class="hero-sub">Автоматическая торговля скинами CS2 — 24/7</p>
 
-    <section id="features" class="grid">
-      <div class="card">
-        <h3>Автообновление цен</h3>
-        <p>Бот помогает быстрее проверять актуальность цен и находить позиции, которые требуют внимания.</p>
-      </div>
-      <div class="card">
-        <h3>Уведомления</h3>
-        <p>Важные события можно отправлять в Telegram, чтобы не пропускать сделки и изменения.</p>
-      </div>
-      <div class="card">
-        <h3>Панель управления</h3>
-        <p>Удобная веб-панель для просмотра статуса, товаров, сделок, цен и настроек.</p>
-      </div>
-    </section>
+        <!-- Countdown -->
+        <div class="countdown" id="countdown">
+            <div class="countdown-block">
+                <span class="countdown-num" id="cd-days">00</span>
+                <span class="countdown-label">дней</span>
+            </div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-block">
+                <span class="countdown-num" id="cd-hours">00</span>
+                <span class="countdown-label">часов</span>
+            </div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-block">
+                <span class="countdown-num" id="cd-mins">00</span>
+                <span class="countdown-label">минут</span>
+            </div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-block">
+                <span class="countdown-num" id="cd-secs">00</span>
+                <span class="countdown-label">секунд</span>
+            </div>
+        </div>
 
-    <section id="security" class="section">
-      <h2>Сделано с упором на безопасность.</h2>
-      <p class="lead">Токены и ключи не хранятся в коде. Настройки выносятся в environment variables, а доступ к админке можно ограничить по Telegram ID и паролю.</p>
-      <div class="list">
-        <div>Закрытый backend и приватный репозиторий</div>
-        <div>Отдельные переменные окружения для токенов</div>
-        <div>Логи, статусы и понятная диагностика ошибок</div>
-      </div>
-    </section>
+        <div class="hero-actions">
+            <a href="#cta" class="btn-hero">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                Уведомить о запуске
+            </a>
+        </div>
+    </div>
 
-    <section id="start" class="section">
-      <h2>Готов к запуску на сервере.</h2>
-      <p class="lead">Сайт можно выложить на GitHub Pages, а backend и Python-бот запустить на VPS с Windows Server или Linux.</p>
-      <div class="actions">
-        <a class="btn white" href="https://github.com/" target="_blank">Открыть GitHub</a>
-        <a class="btn dark" href="#features">Что умеет бот</a>
-      </div>
-    </section>
+    <!-- Floating UI mockup -->
+    <div class="hero-visual">
+        <div class="mock-card mock-main" id="mock-main">
+            <div class="mock-header">
+                <span class="mock-dot green"></span>
+                <span class="mock-title">Prime Market Bot</span>
+                <span class="mock-badge">ONLINE</span>
+            </div>
+            <div class="mock-body">
+                <div class="mock-stat-row">
+                    <div class="mock-stat">
+                        <span class="mock-stat-val" id="counter-lots">0</span>
+                        <span class="mock-stat-label">Активных лотов</span>
+                    </div>
+                    <div class="mock-stat">
+                        <span class="mock-stat-val" id="counter-trades">0</span>
+                        <span class="mock-stat-label">Сделок сегодня</span>
+                    </div>
+                    <div class="mock-stat">
+                        <span class="mock-stat-val">99.7<small>%</small></span>
+                        <span class="mock-stat-label">Uptime</span>
+                    </div>
+                </div>
+                <div class="mock-chart-area">
+                    <svg class="mock-chart-svg" viewBox="0 0 300 80" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#6C5CE7" stop-opacity="0.3"/>
+                                <stop offset="100%" stop-color="#6C5CE7" stop-opacity="0"/>
+                            </linearGradient>
+                        </defs>
+                        <path class="mock-chart-fill" d="M0,60 Q30,45 60,50 T120,30 T180,40 T240,20 T300,35 L300,80 L0,80Z" fill="url(#chart-fill)"/>
+                        <path class="mock-chart-line" d="M0,60 Q30,45 60,50 T120,30 T180,40 T240,20 T300,35" fill="none" stroke="#6C5CE7" stroke-width="2.5"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
 
-    <footer>© 2026 Prime Market Bot. Pre-release build.</footer>
-  </main>
+        <!-- Floating notification cards -->
+        <div class="float-card float-1" id="float-1">
+            <span class="float-icon">💸</span>
+            <div class="float-text">
+                <strong>Продажа</strong>
+                <span>M4A4 | Desolate Space — 1 280 ₽</span>
+            </div>
+        </div>
+        <div class="float-card float-2" id="float-2">
+            <span class="float-icon">📈</span>
+            <div class="float-text">
+                <strong>Auto-raise</strong>
+                <span>AWP | Asiimov +70 ₽</span>
+            </div>
+        </div>
+        <div class="float-card float-3" id="float-3">
+            <span class="float-icon">🛡</span>
+            <div class="float-text">
+                <strong>Защита</strong>
+                <span>Демпинг заблокирован</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-scroll-hint">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+</section>
+
+<!-- ═══ TICKER ═══ -->
+<div class="ticker-wrap">
+    <div class="ticker" id="ticker">
+        <div class="ticker-track">
+            <span class="ticker-item"><span class="t-green">▲</span> AK-47 Redline — 345 ₽</span>
+            <span class="ticker-item"><span class="t-red">▼</span> AWP Asiimov — 2 310 ₽</span>
+            <span class="ticker-item"><span class="t-green">▲</span> Desert Eagle Blaze — 1 920 ₽</span>
+            <span class="ticker-item"><span class="t-green">▲</span> Glock-18 Fade — 4 200 ₽</span>
+            <span class="ticker-item"><span class="t-red">▼</span> USP-S Kill Confirmed — 890 ₽</span>
+            <span class="ticker-item"><span class="t-green">▲</span> Butterfly Fade — 45 000 ₽</span>
+            <span class="ticker-item"><span class="t-green">▲</span> Karambit Doppler — 52 000 ₽</span>
+            <span class="ticker-item"><span class="t-red">▼</span> M4A1-S Hyper Beast — 780 ₽</span>
+            <!-- duplicate for seamless loop -->
+            <span class="ticker-item"><span class="t-green">▲</span> AK-47 Redline — 345 ₽</span>
+            <span class="ticker-item"><span class="t-red">▼</span> AWP Asiimov — 2 310 ₽</span>
+            <span class="ticker-item"><span class="t-green">▲</span> Desert Eagle Blaze — 1 920 ₽</span>
+            <span class="ticker-item"><span class="t-green">▲</span> Glock-18 Fade — 4 200 ₽</span>
+            <span class="ticker-item"><span class="t-red">▼</span> USP-S Kill Confirmed — 890 ₽</span>
+            <span class="ticker-item"><span class="t-green">▲</span> Butterfly Fade — 45 000 ₽</span>
+            <span class="ticker-item"><span class="t-green">▲</span> Karambit Doppler — 52 000 ₽</span>
+            <span class="ticker-item"><span class="t-red">▼</span> M4A1-S Hyper Beast — 780 ₽</span>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="features" id="features">
+    <div class="container">
+        <h2 class="section-title reveal">Всё, что нужно</h2>
+        <div class="features-grid">
+            <div class="feature-card reveal" style="--delay:0.05s">
+                <div class="feature-icon purple">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                </div>
+                <h3>Авто-торг</h3>
+                <p>Бот сам следит за рынком и подстраивает цены</p>
+            </div>
+            <div class="feature-card reveal" style="--delay:0.1s">
+                <div class="feature-icon green">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>Антидемпинг</h3>
+                <p>Умная защита от случайных низких цен конкурентов</p>
+            </div>
+            <div class="feature-card reveal" style="--delay:0.15s">
+                <div class="feature-icon blue">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                </div>
+                <h3>Аналитика</h3>
+                <p>Графики, сводки и полная статистика продаж</p>
+            </div>
+            <div class="feature-card reveal" style="--delay:0.2s">
+                <div class="feature-icon amber">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                </div>
+                <h3>Мгновенные пуши</h3>
+                <p>Уведомления о покупках, продажах и падениях цен</p>
+            </div>
+            <div class="feature-card reveal" style="--delay:0.25s">
+                <div class="feature-icon red">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <h3>24/7 Работа</h3>
+                <p>Бот не спит — торгует даже когда вы отдыхаете</p>
+            </div>
+            <div class="feature-card reveal" style="--delay:0.3s">
+                <div class="feature-icon pink">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+                </div>
+                <h3>Полный контроль</h3>
+                <p>Гибкие настройки прямо из Telegram</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section class="how" id="how">
+    <div class="container">
+        <h2 class="section-title reveal">Три шага</h2>
+        <div class="steps">
+            <div class="step reveal" style="--delay:0.05s">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h3>Запустите бота</h3>
+                    <p>Откройте в Telegram и введите API-ключ</p>
+                </div>
+            </div>
+            <div class="step-line reveal" style="--delay:0.1s"></div>
+            <div class="step reveal" style="--delay:0.15s">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h3>Настройте</h3>
+                    <p>Выберите лимиты и режим торговли</p>
+                </div>
+            </div>
+            <div class="step-line reveal" style="--delay:0.2s"></div>
+            <div class="step reveal" style="--delay:0.25s">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h3>Зарабатывайте</h3>
+                    <p>Бот работает — вы отдыхаете</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ LIVE STATS ═══ -->
+<section class="stats" id="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-block reveal" style="--delay:0s">
+                <span class="stat-big" data-target="14832">0</span>
+                <span class="stat-desc">Сделок обработано</span>
+            </div>
+            <div class="stat-block reveal" style="--delay:0.1s">
+                <span class="stat-big" data-target="99" data-suffix=".7%">0</span>
+                <span class="stat-desc">Uptime</span>
+            </div>
+            <div class="stat-block reveal" style="--delay:0.2s">
+                <span class="stat-big" data-target="247">0</span>
+                <span class="stat-desc">Пользователей</span>
+            </div>
+            <div class="stat-block reveal" style="--delay:0.3s">
+                <span class="stat-big" data-target="0" data-suffix=" сек" data-val="1.2">0</span>
+                <span class="stat-desc">Среднее время реакции</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta" id="cta">
+    <div class="cta-glow"></div>
+    <div class="container">
+        <div class="cta-content reveal">
+            <h2>Будь первым</h2>
+            <p class="cta-sub">Подпишись, чтобы узнать о запуске раньше всех</p>
+            <div class="cta-form">
+                <a href="https://t.me/primebot_news" class="btn-hero btn-hero-lg" target="_blank">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.67-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.37-.49 1.02-.74 3.98-1.73 6.64-2.88 7.97-3.44 3.8-1.58 4.59-1.86 5.1-1.87.11 0 .37.03.54.17.14.12.18.28.2.45-.01.06.01.24 0 .37z"/></svg>
+                    Подписаться в Telegram
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+    <div class="container footer-inner">
+        <div class="footer-brand-wrap">
+            <img src="logo.png" alt="PRIME" class="footer-logo">
+            <span class="footer-brand">PRIME</span>
+        </div>
+        <span class="footer-copy">© 2026 · Скоро запуск</span>
+    </div>
+</footer>
+
+<script src="app.js"></script>
 </body>
 </html>
