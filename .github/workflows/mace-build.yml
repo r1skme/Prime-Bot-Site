@@ -1,0 +1,38 @@
+name: Build Mace macOS
+
+on:
+  push:
+    branches: [mace-build-temp]
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reassemble source archive
+        run: |
+          cat mace-build/chunk00.b64 mace-build/chunk01.b64 mace-build/chunk02.b64 mace-build/chunk03.b64 mace-build/chunk04.b64 mace-build/chunk05.b64 | base64 --decode > Mace-macOS-GitHub-Ready.zip
+          unzip -t Mace-macOS-GitHub-Ready.zip
+      - name: Unpack source
+        run: |
+          rm -rf mace-src
+          mkdir mace-src
+          ditto -x -k Mace-macOS-GitHub-Ready.zip mace-src
+      - name: Build Release app
+        run: |
+          cd mace-src/Mace
+          chmod +x scripts/*.sh
+          ./scripts/build-release.sh
+      - name: Verify app
+        run: |
+          test -d mace-src/Mace/dist/Mace.app
+          codesign --verify --deep --strict mace-src/Mace/dist/Mace.app
+      - name: Package app
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent mace-src/Mace/dist/Mace.app Mace.app.zip
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mace-macOS-app
+          path: Mace.app.zip
+          if-no-files-found: error
