@@ -35,17 +35,18 @@ jobs:
           cd mace-src/Mace
           chmod +x scripts/*.sh
           ./scripts/build-release.sh
-      - name: Verify app
+      - name: Verify packaged app
         run: |
-          test -d mace-src/Mace/dist/Mace.app
-          codesign --verify --deep --strict mace-src/Mace/dist/Mace.app
-          file mace-src/Mace/dist/Mace.app/Contents/MacOS/Mace
-      - name: Package app
-        run: |
-          ditto -c -k --sequesterRsrc --keepParent mace-src/Mace/dist/Mace.app Mace.app.zip
+          test -f mace-src/Mace/Mace-macOS.zip
+          rm -rf verify-app && mkdir verify-app
+          ditto -x -k mace-src/Mace/Mace-macOS.zip verify-app
+          test -d verify-app/Mace.app
+          codesign --verify --deep --strict verify-app/Mace.app
+          file verify-app/Mace.app/Contents/MacOS/Mace
+          lipo -archs verify-app/Mace.app/Contents/MacOS/Mace
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Mace-macOS-app
-          path: Mace.app.zip
+          path: mace-src/Mace/Mace-macOS.zip
           if-no-files-found: error
