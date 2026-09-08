@@ -13,11 +13,23 @@ jobs:
         run: |
           cat mace-build/chunk00.b64 mace-build/chunk01.b64 mace-build/chunk02.b64 mace-build/chunk03.b64 mace-build/chunk04.b64 mace-build/chunk05.b64 | base64 --decode > Mace-macOS-GitHub-Ready.zip
           unzip -t Mace-macOS-GitHub-Ready.zip
-      - name: Unpack source
+      - name: Unpack and patch source
         run: |
           rm -rf mace-src
           mkdir mace-src
           ditto -x -k Mace-macOS-GitHub-Ready.zip mace-src
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path('mace-src/Mace')
+          p=root/'Mace/Services/RegionSelectionController.swift'
+          s=p.read_text(); s=s.replace('    private final class RegionSelectionSession {','    @MainActor\n    private final class RegionSelectionSession {'); p.write_text(s)
+          p=root/'Mace/Services/WorkflowRunner.swift'
+          s=p.read_text(); s=s.replace('let url = fileURL ?? ImageCodec.save(image, settings: persistence.settings)','let url = try fileURL ?? ImageCodec.save(image, settings: persistence.settings)'); p.write_text(s)
+          p=root/'Mace/Views/WorkflowsView.swift'
+          s=p.read_text(); old='Section("After capture") { ForEach(PostCaptureAction.allCases) { action in Toggle(action.rawValue, isOn: Binding(get: { workflow.actions.contains(action) }, set: { $0 ? workflow.actions.insert(action) : workflow.actions.remove(action) })) } }'; new='Section("After capture") { ForEach(PostCaptureAction.allCases) { action in Toggle(action.rawValue, isOn: Binding(get: { workflow.actions.contains(action) }, set: { enabled in if enabled { workflow.actions.insert(action) } else { workflow.actions.remove(action) } })) } }'; s=s.replace(old,new); p.write_text(s)
+          p=root/'Mace/Services/ScreenRecorderService.swift'
+          s=p.read_text(); s=s.replace('        case .audio:\n            if audioInput?.isReadyForMoreMediaData == true { audioInput?.append(sampleBuffer) }\n        @unknown default:', '        case .audio:\n            if audioInput?.isReadyForMoreMediaData == true { audioInput?.append(sampleBuffer) }\n        case .microphone:\n            break\n        @unknown default:'); p.write_text(s)
+          PY
       - name: Build Release app
         run: |
           cd mace-src/Mace
@@ -27,6 +39,7 @@ jobs:
         run: |
           test -d mace-src/Mace/dist/Mace.app
           codesign --verify --deep --strict mace-src/Mace/dist/Mace.app
+          file mace-src/Mace/dist/Mace.app/Contents/MacOS/Mace
       - name: Package app
         run: |
           ditto -c -k --sequesterRsrc --keepParent mace-src/Mace/dist/Mace.app Mace.app.zip
