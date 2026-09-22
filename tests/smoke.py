@@ -1,136 +1,115 @@
-"""PRIME smoke tests. Install Playwright, then run: python tests/smoke.py.
-By default, exercise the real local HTTP site. --inline is for environments
-where a managed browser blocks local URLs; the same CSS/JS are inlined there.
+"""python tests/smoke.py --inline --report report.json
+Install: python -m pip install playwright; python -m playwright install chromium
+Default: real local HTTP. --inline: same source in memory for restricted browsers.
 """
+from __future__ import annotations
 import argparse
-from functools import partial
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+import functools
+import http.server
 import json
 from pathlib import Path
+import re
 import shutil
-from threading import Thread
-from urllib.parse import urljoin
-from urllib.request import urlopen
+import threading
+import urllib.request
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
-WIDTHS = (320, 360, 390, 620, 768, 860, 1024, 1280, 1440, 1920)
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--inline', action='store_true')
-parser.add_argument('--report', type=Path)
-args = parser.parse_args()
 
-class Handler(SimpleHTTPRequestHandler):
-    def log_message(self, *args):
-        pass
-
-server = ThreadingHTTPServer(('127.0.0.1', 0), partial(Handler, directory=str(ROOT)))
-Thread(target=server.serve_forever, daemon=True).start()
-base = f'http://127.0.0.1:{server.server_port}/'
-source = (ROOT / 'index.html').read_text(encoding='utf-8')
-html = source.replace('<link rel="stylesheet" href="./style.css">', '<style>' + (ROOT / 'style.css').read_text(encoding='utf-8') + '</style>')
-html = html.replace('<script src="./app.js" defer></script>', '')
-script = (ROOT / 'app.js').read_text(encoding='utf-8')
-report = {'browser_mode': 'inline-source' if args.inline else 'local-http', 'checks': []}
-
-def check(label, condition):
-    assert condition, label
-    report['checks'].append(label)
-
-def load(page, javascript=True):
-    if args.inline:
-        content = html.replace('</body>', '<script>' + script + '</script></body>') if javascript else html
-        page.set_content(content, wait_until='load')
-    else:
-        page.goto(base, wait_until='networkidle')
-
-def number(text):
-    return int(''.join(c for c in text if c.isdecimal()))
-
-try:
-    # Confirm the real files can be served, independently of browser URL policies.
-    for asset in ('index.html', 'style.css', 'app.js', 'favicon.svg', '.nojekyll'):
-        with urlopen(urljoin(base, asset)) as response:
-            check(f'HTTP asset {asset}', response.status == 200)
-    # The same relative URLs resolve under the GitHub project path.
-    for asset in ('./style.css', './app.js', './favicon.svg'):
-        resolved = urljoin('https://example.github.io/Prime-Bot-Site/', asset)
-        check(f'project path {asset}', resolved.endswith('/Prime-Bot-Site/' + asset[2:]))
-    with sync_playwright() as p:
-        executable = shutil.which('chromium') or shutil.which('google-chrome')
-        options = {'headless': True}
-        if executable:
-            options['executable_path'] = executable
-        browser = p.chromium.launch(**options)
-        report['browser'] = 'Chromium ' + browser.version
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--inline', action='store_true')
+    parser.add_argument('--report', default='report.json')
+    args = parser.parse_args()
+    results = []
+    def check(name: str, ok: bool) -> None:
+        results.append({'name': name, 'passed': bool(ok)})
+        print(('PASS' if ok else 'FAIL'), name)
+    html = (ROOT / 'index.html').read_text()
+    css = (ROOT / 'style.css').read_text()
+    js = (ROOT / 'app.js').read_text()
+    class Handler(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, *_): pass
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Handler, directory=str(ROOT)))
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    base = f'http://127.0.0.1:{server.server_port}/'
+    for name in ('index.html', 'style.css', 'app.js', 'favicon.svg', '.nojekyll'):
+        with urllib.request.urlopen(base + name, timeout=5) as response:
+            check('HTTP asset: ' + name, response.status == 200 and response.read() == (ROOT / name).read_bytes())
+    check('Relative assets for GitHub Pages project paths', all(x.startswith('./') for x in re.findall(r'(?:src|href)="([^"]+\.(?:css|js|svg))"', html)))
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(executable_path=shutil.which('chromium'), headless=True, args=['--no-sandbox'])
         errors = []
-        page = browser.new_page()
-        page.on('pageerror', lambda e: errors.append(str(e)))
-        for width in WIDTHS:
-            page.set_viewport_size({'width': width, 'height': 900})
-            load(page)
-            check(f'no horizontal overflow at {width}px', page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
-        check('one h1 and Russian document language', page.locator('h1').count() == 1 and page.locator('html').get_attribute('lang') == 'ru')
-        check('all fragment links resolve', page.evaluate("[...document.querySelectorAll('a[href^=\"#\"]')].every(a=>document.getElementById(a.getAttribute('href').slice(1)))"))
-        check('external links use noopener and noreferrer', page.evaluate("[...document.querySelectorAll('a[target=\"_blank\"]')].every(a=>a.rel.includes('noopener')&&a.rel.includes('noreferrer'))"))
-        check('no API or credential forms', page.locator('form, input[type=password], input[type=email]').count() == 0)
-        slider = page.locator('#price-floor')
-        expected_competitors = {'normal': 1280, 'dump': 890, 'rise': 1590}
-        for scenario, competitor in expected_competitors.items():
-            page.locator(f'[data-scenario="{scenario}"]').click()
-            for minimum in range(900, 1451, 50):
-                slider.fill(str(minimum))
-                expected = 1480 if competitor - 1 < minimum else competitor - 1
-                actual = number(page.locator('#demo-price').inner_text())
-                check(f'{scenario} minimum {minimum}: {expected}', actual == expected and actual >= minimum)
-            check(f'only {scenario} is selected', page.locator('[data-scenario][aria-pressed=true]').count() == 1 and page.locator(f'[data-scenario="{scenario}"]').get_attribute('aria-pressed') == 'true')
-        page.locator('[data-scenario="normal"]').focus()
-        page.keyboard.press('Enter')
-        slider.focus()
-        page.keyboard.press('Home')
-        check('range Home key', slider.input_value() == '900')
-        page.keyboard.press('ArrowRight')
-        check('range ArrowRight key', slider.input_value() == '950')
-        page.keyboard.press('End')
-        check('range End key and limit protection', slider.input_value() == '1450' and number(page.locator('#demo-price').inner_text()) == 1480)
-        summary = page.locator('details').nth(1).locator('summary')
-        summary.focus()
-        page.keyboard.press('Enter')
-        check('FAQ opens with keyboard', page.locator('details').nth(1).get_attribute('open') is not None)
-        page.keyboard.press('Enter')
-        check('FAQ closes with keyboard', page.locator('details').nth(1).get_attribute('open') is None)
-        page.set_viewport_size({'width': 390, 'height': 844})
-        menu = page.locator('.menu-toggle')
-        menu.click()
-        check('mobile menu opens', page.locator('#main-nav').is_visible() and menu.get_attribute('aria-expanded') == 'true')
+        def load(page, script: bool = True):
+            page.on('pageerror', lambda e: errors.append(str(e)))
+            if args.inline:
+                source = html.replace('<link rel="stylesheet" href="./style.css">', '<style>'+css+'</style>').replace('<script src="./app.js" defer></script>', '')
+                page.set_content(source, wait_until='domcontentloaded')
+                if script: page.add_script_tag(content=js)
+            else:
+                page.goto(base, wait_until='networkidle')
+        page = browser.new_page(viewport={'width':1440,'height':1000})
+        load(page)
+        page.wait_for_timeout(250)
+        check('One h1 and Russian document', page.locator('h1').count()==1 and page.locator('html').get_attribute('lang')=='ru')
+        check('No provisional labels', not re.search(r'демо|тестов|симуляц|в разработке|вымышлен|концепци', page.locator('body').inner_text(), re.I))
+        check('Every anchor resolves', page.evaluate("[...document.querySelectorAll('a[href^=\"#\"]')].every(a=>!!document.getElementById(a.hash.slice(1)))"))
+        check('External links secured', page.evaluate("[...document.querySelectorAll('a[target=\"_blank\"]')].every(a=>a.rel.includes('noopener')&&a.rel.includes('noreferrer'))"))
+        check('No secret/payment fields', page.locator('input,textarea').count()==0)
+        check('3D mesh rendered', page.locator('.hero-art').evaluate("el=>el.classList.contains('scene-ready')"))
+        canvas = lambda: page.locator('canvas').evaluate('el=>el.toDataURL()')
+        a=canvas();page.wait_for_timeout(180);check('Scene animates', canvas()!=a)
+        page.locator('.motion-button').click();page.wait_for_timeout(50)
+        a=canvas();page.wait_for_timeout(180);check('Motion toggle stops rendering', canvas()==a and page.locator('.motion-button').get_attribute('aria-pressed')=='true')
+        page.locator('.motion-button').click();page.wait_for_timeout(70)
+        a=canvas();page.wait_for_timeout(180);check('Motion toggle resumes rendering',canvas()!=a)
+        for width in (320,360,375,390,430,620,700,701,768,900,1024,1280,1440,1920):
+            page.set_viewport_size({'width':width,'height':960})
+            page.wait_for_timeout(80)
+            check(f'No horizontal overflow at {width}px',page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
+        page.set_viewport_size({'width':390,'height':844})
+        page.locator('.menu-button').click()
+        check('Mobile navigation opens and focuses link',page.locator('.navigation').is_visible() and page.evaluate('document.activeElement.closest(".navigation")!==null'))
         page.keyboard.press('Escape')
-        check('Escape closes menu and restores focus', not page.locator('#main-nav').is_visible() and menu.evaluate('(e)=>e===document.activeElement'))
-        menu.click()
-        page.locator('#main-nav a').first.click()
-        check('navigation closes mobile menu', menu.get_attribute('aria-expanded') == 'false')
-        menu.click()
-        page.set_viewport_size({'width': 1280, 'height': 900})
-        page.wait_for_timeout(100)
-        page.set_viewport_size({'width': 390, 'height': 844})
-        check('desktop resize clears mobile menu state', menu.get_attribute('aria-expanded') == 'false')
-        check('no JavaScript runtime errors', not errors)
-        page.close()
-        reduced = browser.new_page(reduced_motion='reduce')
-        load(reduced)
-        check('reduced-motion disables smooth scrolling', reduced.evaluate("getComputedStyle(document.documentElement).scrollBehavior") == 'auto')
-        reduced.close()
-        nojs = browser.new_page(java_script_enabled=False, viewport={'width': 390, 'height': 844})
-        load(nojs, javascript=False)
-        check('no-JS content and navigation visible', nojs.locator('h1').is_visible() and nojs.locator('#main-nav').is_visible())
-        check('no-JS controls honestly disabled', nojs.locator('#price-floor').is_disabled() and nojs.locator('[data-scenario]').first.is_disabled())
-        check('no-JS FAQ remains readable', nojs.locator('details').first.locator('.faq-answer').is_visible())
-        nojs.close()
+        check('Menu Escape restores focus',page.locator('.menu-button').get_attribute('aria-expanded')=='false' and page.locator('.menu-button').evaluate('el=>el===document.activeElement'))
+        page.locator('.menu-button').click();page.locator('.navigation a').first.click()
+        check('Menu closes after navigation',page.locator('.menu-button').get_attribute('aria-expanded')=='false')
+        page.locator('.menu-button').click();page.set_viewport_size({'width':1440,'height':1000});page.wait_for_timeout(80)
+        check('Desktop resets menu',page.locator('.menu-button').get_attribute('aria-expanded')=='false')
+        page.locator('.expand-button').click()
+        check('Interface opens in dialog',page.locator('dialog').evaluate('el=>el.open') and page.locator('.dialog-content .app-window').count()==1)
+        check('Modal has unique IDs',page.evaluate("new Set([...document.querySelectorAll('[id]')].map(e=>e.id)).size===document.querySelectorAll('[id]').length"))
+        page.keyboard.press('Tab');page.keyboard.press('Tab')
+        check('Modal traps keyboard focus',page.evaluate('!!document.activeElement.closest("dialog")'))
+        page.keyboard.press('Escape')
+        page.wait_for_function("!document.querySelector('dialog').open && !document.body.classList.contains('modal-open')")
+        check('Modal Escape restores focus and clears clone',not page.locator('dialog').evaluate('el=>el.open') and page.locator('.expand-button').evaluate('el=>el===document.activeElement') and page.locator('.dialog-content').inner_text()=='')
+        page.locator('.expand-button').click();page.locator('.close-dialog').click()
+        page.wait_for_function("!document.body.classList.contains('modal-open')")
+        check('Modal close button unlocks page',not page.locator('body').evaluate('el=>el.classList.contains("modal-open")'))
+        # Stop canvas work outside the viewport.
+        page.evaluate('document.querySelector("#start").scrollIntoView({behavior:"instant"})');page.wait_for_timeout(150)
+        a=canvas();page.wait_for_timeout(150);check('Offscreen scene stops rendering',canvas()==a)
+        reduced_context=browser.new_context(reduced_motion='reduce',viewport={'width':390,'height':844})
+        reduced_page=reduced_context.new_page();load(reduced_page)
+        check('Reduced motion disables scrolling animation',reduced_page.evaluate('getComputedStyle(document.documentElement).scrollBehavior')=='auto')
+        check('Reduced motion pauses scene',reduced_page.locator('.motion-button').get_attribute('aria-pressed')=='true')
+        nojs_context=browser.new_context(java_script_enabled=False,viewport={'width':390,'height':844})
+        nojs_page=nojs_context.new_page();load(nojs_page,False)
+        check('No JS: text and navigation remain visible',nojs_page.locator('h1').is_visible() and nojs_page.locator('.navigation a').first.is_visible())
+        check('No JS: no inert controls shown',not nojs_page.locator('.motion-button').is_visible() and not nojs_page.locator('.expand-button').is_visible() and not nojs_page.locator('.menu-button').is_visible())
+        check('No JS: decorative fallback visible',nojs_page.locator('.art-fallback').is_visible())
+        if args.inline:
+            fallback=browser.new_page(viewport={'width':390,'height':844})
+            load(fallback,False)
+            fallback.evaluate('HTMLCanvasElement.prototype.getContext=()=>null')
+            fallback.add_script_tag(content=js)
+            check('Canvas unavailable: graceful 3D-styled fallback',fallback.locator('.art-fallback').is_visible() and not fallback.locator('.hero-art').evaluate('el=>el.classList.contains("scene-ready")'))
+        check('No JavaScript runtime errors',not errors)
+        output={'browser':browser.version,'mode':'inline + separate HTTP assets' if args.inline else 'HTTP','checks':results,'passed':sum(x['passed'] for x in results),'total':len(results),'errors':errors}
+        Path(args.report).write_text(json.dumps(output,ensure_ascii=False,indent=2))
         browser.close()
-    report['passed'] = len(report['checks'])
-    report['status'] = 'PASS'
-finally:
     server.shutdown()
-    server.server_close()
-if args.report:
-    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
-print(json.dumps(report, ensure_ascii=False, indent=2))
+    assert all(r['passed'] for r in results), 'Some checks failed; see report.'
+
+if __name__=='__main__': main()
