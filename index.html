@@ -1,161 +1,53 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#08090a">
-<meta name="color-scheme" content="dark">
-<title>PRIME / Рынок твой. Время тоже.</title>
-<meta name="description" content="PRIME Market Center. Автоцены, контроль торговли скинами CS2 и уведомления в Telegram. Рынок твой. Время тоже.">
-<meta property="og:type" content="website">
-<meta property="og:locale" content="ru_RU">
-<meta property="og:title" content="PRIME / Рынок твой. Время тоже.">
-<meta property="og:description" content="Торговля скинами. Без лишних движений.">
-<meta name="twitter:card" content="summary">
-<link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
-<link rel="stylesheet" href="./style.css">
-<script src="./assets/prime-scene.js" defer></script>
-<script src="./script.js" defer></script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090a0b"><meta name="color-scheme" content="dark">
+<title>PRIME — Торговля без лишних движений</title>
+<meta name="description" content="Твои скины. Твой контроль. Посмотри PRIME Market Center в действии: товары, цены, сделки и аналитика в одном интерфейсе.">
+<meta property="og:title" content="PRIME — Рынок твой. Время тоже."><meta property="og:description" content="Попробуй Market Center прямо в браузере."><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU">
+<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./assets/workspace.css">
+<script src="./assets/prime-scene.js" defer></script><script src="./assets/workspace.js" defer></script><script src="./script.js" defer></script>
 </head>
 <body>
-<svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
-  <symbol id="diagonal" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6h12v12"/></symbol>
-  <symbol id="telegram" viewBox="0 0 24 24"><path d="m21 4-4 16-6-5-4 3v-6l-4-2L21 4Zm0 0L7 12m4 3 5-6"/></symbol>
-  <symbol id="home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v11H3V10Z"/><path d="M9 21V12h6v9"/></symbol>
-  <symbol id="box" viewBox="0 0 24 24"><path d="m3 7 9-4 9 4v10l-9 4-9-4V7Zm0 0 9 4 9-4m-9 4v10M7 5l10 4"/></symbol>
-  <symbol id="swap" viewBox="0 0 24 24"><path d="M3 7h17m-5-5 5 5-5 5M21 17H4m5-5-5 5 5 5"/></symbol>
-  <symbol id="chart" viewBox="0 0 24 24"><path d="M4 19v-5m5 5V9m5 10v-7m5 7V4M3 11l6-6 5 3 7-7"/></symbol>
-  <symbol id="settings" viewBox="0 0 24 24"><path d="M3 6h18M3 18h18"/><circle cx="8" cy="6" r="3"/><circle cx="16" cy="18" r="3"/></symbol>
-  <symbol id="shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></symbol>
-  <symbol id="expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
-  <symbol id="refresh" viewBox="0 0 24 24"><path d="M20 7a8 8 0 0 0-14-2L3 8m0-5v5h5m-4 9a8 8 0 0 0 14 2l3-3m0 5v-5h-5"/></symbol>
-  <symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
-  <symbol id="key" viewBox="0 0 24 24"><circle cx="8" cy="8" r="5"/><path d="m12 12 9 9m-6-6 3-3m0 6 3-3"/></symbol>
-  <symbol id="pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
-  <symbol id="play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></symbol>
-  <symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
-</svg>
-<a href="#main" class="skip">К содержимому</a>
-<header class="header">
-  <div class="header-inner">
-    <a href="#top" class="brand" aria-label="PRIME, в начало"><span class="brand-type" aria-hidden="true">PR<span>I</span>ME</span></a>
-    <nav id="navigation" class="navigation" aria-label="Навигация"><a href="#center">Market Center</a><a href="#control">Возможности</a><a href="#telegram-section">Telegram</a></nav>
-    <div class="header-actions">
-      <button type="button" class="motion-button icon-button" aria-label="Остановить анимацию" aria-pressed="false" hidden><svg class="icon" aria-hidden="true"><use href="#pause"/></svg></button>
-      <a class="header-cta" href="https://t.me/primebot_news" target="_blank" rel="noopener noreferrer">Telegram <svg class="icon" aria-hidden="true"><use href="#diagonal"/></svg><span class="sr-only">, в новой вкладке</span></a>
-      <button type="button" class="menu-button icon-button" aria-controls="navigation" aria-expanded="false" aria-label="Открыть меню" hidden><span></span><span></span></button>
-    </div>
-  </div>
-</header>
+<a href="#main" class="skip-link">К содержимому</a>
+<header class="site-header"><div class="header-wrap">
+<a class="brand" href="#top" aria-label="PRIME, в начало">PR<span>I</span>ME</a>
+<nav class="site-nav" aria-label="Навигация"><a href="#product">Приложение</a><a href="#possibilities">Возможности</a><a href="https://t.me/primebot_news" target="_blank" rel="noopener noreferrer">Telegram ↗</a></nav>
+<div class="header-actions"><button class="motion-control icon-button" type="button" aria-label="Остановить анимации" aria-pressed="false" hidden>Ⅱ</button><button class="button button-small" data-open-app="overview" type="button" hidden>Попробовать <span aria-hidden="true">↗</span></button><button class="menu-toggle icon-button" type="button" aria-label="Открыть меню" aria-expanded="false" hidden>☰</button></div>
+</div></header>
 <main id="main">
-<section id="top" class="hero" aria-labelledby="hero-title">
- <div class="hero-frame">
-  <div class="hero-grid wrap">
-   <div class="hero-copy">
-    <p class="eyebrow"><span class="status-dot"></span> PRIME / CS2 AUTOMATION</p>
-    <h1 id="hero-title">Рынок твой.<br><span>Время тоже.</span></h1>
-    <p class="hero-description">Торговля скинами. <br>Без лишних движений.</p>
-    <div class="hero-actions"><a class="button primary" href="https://t.me/primebot_news" target="_blank" rel="noopener noreferrer">Открыть Telegram <svg class="icon" aria-hidden="true"><use href="#diagonal"/></svg><span class="sr-only">, в новой вкладке</span></a><a class="watch-link" href="#center"><span class="watch-icon"><svg class="icon" aria-hidden="true"><use href="#play"/></svg></span>Смотреть PRIME</a></div>
-   </div>
-   <div class="hero-visual">
-    <div class="scene-caption"><span>PRIME ENGINE</span><span>01 / 05</span></div>
-    <div class="object-scene hero-scene" data-scene="hero" aria-hidden="true"><img class="scene-fallback" src="./assets/prime-mark.svg" alt="" width="600" height="600"><canvas></canvas></div>
-    <div class="floating-note price-note"><svg class="icon" aria-hidden="true"><use href="#shield"/></svg><div><span class="micro">КОНТРОЛЬ ЦЕНЫ</span><strong>В твоих границах.</strong></div><span class="status-dot"></span></div>
-    <div class="floating-note sync-note"><span class="status-dot"></span><span>MARKET / PRIME / TELEGRAM</span></div>
-    <div class="object-signature">CONTROL IS YOUR ADVANTAGE</div>
-   </div>
-  </div>
-  <div class="hero-bottom wrap"><span>market.csgo.com / Telegram</span><a href="#center">Листай. Всё под контролем. <span aria-hidden="true">↓</span></a><span>PRIME MARKET CENTER</span></div>
- </div>
+<section class="hero" id="top">
+<div class="hero-inner wrap">
+<div class="hero-copy"><h1>Рынок твой.<br><span>Время тоже.</span></h1><p>Торговля скинами CS2.<br>Без лишних движений.</p><div class="hero-actions"><button class="button button-mint" data-open-app="overview" type="button" hidden>Попробовать PRIME <span aria-hidden="true">↗</span></button><a class="plain-link" href="https://t.me/primebot_news" target="_blank" rel="noopener noreferrer">Канал в Telegram <span aria-hidden="true">↗</span></a></div></div>
+<div class="hero-art" aria-hidden="true"><div class="hero-light"></div><div class="object-scene" data-scene="hero"><img class="scene-fallback" src="./assets/prime-mark.svg" width="600" height="600" alt=""><canvas></canvas></div></div>
+</div>
+<a class="scroll-arrow" href="#product" aria-label="Перейти к приложению">↓</a>
 </section>
-
-<section id="center" class="showcase section" aria-labelledby="center-title">
- <div class="wrap">
-  <div class="section-head reveal"><div><p class="eyebrow">01 / MARKET CENTER</p><h2 id="center-title">Один экран.<br><span>Вся картина.</span></h2></div><div class="head-aside"><p>Товары. Сделки. Состояние бота.</p><button class="text-button expand-button" type="button" hidden>Открыть экран <svg class="icon" aria-hidden="true"><use href="#expand"/></svg></button></div></div>
-  <div class="product-stage">      <div class="app-window" id="app-window" role="img" aria-label="Экран PRIME Market Center, 22 сентября: 162 активных товара, 20 продаж, последние события и состояние Telegram-бота">
-        
-        <div class="workspace">
-          <aside class="app-sidebar" aria-hidden="true">
-            <span class="wordmark app-wordmark">PR<span class="logo-slash">I</span>ME</span>
-            <div class="app-nav"><span class="selected"><svg class="icon"><use href="#home"/></svg>Главная</span><span><svg class="icon"><use href="#box"/></svg>Товары</span><span><svg class="icon"><use href="#swap"/></svg>Сделки</span><span><svg class="icon"><use href="#chart"/></svg>Аналитика</span><span><svg class="icon"><use href="#settings"/></svg>Настройки</span></div>
-            <div class="app-profile"><span class="avatar">R</span><span>@R1SKME<small>PRIME MARKET</small></span><span class="profile-more">···</span></div>
-          </aside>
-          <div class="app-main">
-            <div class="app-heading"><div><h3>Обзор</h3><p>Главное за сегодня без лишних деталей.</p></div><span class="app-refresh" aria-hidden="true"><svg class="icon"><use href="#refresh"/></svg><span>Обновить</span></span></div>
-            <div class="metric-grid"><div><span>Активные товары</span><strong>162<span class="metric-accent"></span></strong></div><div><span>Продажи сегодня</span><strong>20</strong><small>+20 к предыдущему периоду</small></div><div><span>Покупки сегодня</span><strong>0</strong></div><div><span>Ожидает подтверждения</span><strong>0</strong></div></div>
-            <div class="app-panels">
-              <div class="events-panel"><div class="panel-heading"><h4>Последние события</h4><span>Журнал <span aria-hidden="true">↗</span></span></div>
-                <div class="event"><time>22.09, 13:43</time><span class="event-icon">₽</span><div class="event-data"><strong>Предмет продан</strong><p>AWP | Exothermic <span>(Battle-Scarred)</span></p><div class="event-tags"><span>СУММА <b>220.82 ₽</b></span><span>ПОЛУЧЕНО <b>209.77 ₽</b></span><span class="event-state"><i></i> создано</span></div></div></div>
-                <div class="event"><time>22.09, 13:36</time><span class="event-icon">₽</span><div class="event-data"><strong>Предмет продан</strong><p>AWP | Ice Coaled <span>(Battle-Scarred)</span></p><div class="event-tags"><span>СУММА <b>354.79 ₽</b></span><span>ПОЛУЧЕНО <b>337.05 ₽</b></span><span class="event-state"><i></i> создано</span></div></div></div>
-                <div class="event"><time>22.09, 13:31</time><span class="event-icon">₽</span><div class="event-data"><strong>Предмет продан</strong><p>AWP | Exothermic <span>(Battle-Scarred)</span></p><div class="event-tags"><span>СУММА <b>220.82 ₽</b></span><span>ПОЛУЧЕНО <b>209.77 ₽</b></span><span class="event-state"><i></i> создано</span></div></div></div>
-              </div>
-              <div class="bot-panel"><div class="bot-heading"><span class="bot-beacon"></span><div><span>Telegram-бот</span><strong>Бот работает</strong></div></div><dl><div><dt>Аптайм</dt><dd>51 мин</dd></div><div><dt>Последняя синхронизация</dt><dd>22.09,<br>13:47</dd></div><div><dt>Автосинхронизация</dt><dd class="mint">работает</dd></div><div><dt>Ошибки</dt><dd>0</dd></div></dl><div class="bot-signature" aria-hidden="true">PRIME<span>MARKET CENTER</span></div></div>
-            </div>
-          </div>
-        </div>
-      </div></div>
-  <div class="product-caption"><span>PRIME MARKET CENTER / ЭКРАН ПРИЛОЖЕНИЯ</span><span>22.09 / DESKTOP + TELEGRAM</span></div>
- </div>
+<section class="product-section wrap" id="product">
+<div class="section-heading"><div><h2>Не смотри.<br><span>Попробуй.</span></h2></div><p>Выбери товар, измени цену.<br>Всё остальное уже под рукой.</p></div>
+<div class="workspace-frame" id="embed-slot">
+<div id="market-app" class="market-app" data-theme="dark">
+<div class="app-fallback"><h3>PRIME Market Center</h3><p>Товары, цены и история сделок в одном месте.</p><noscript><p>Для интерактивного просмотра включи JavaScript.</p></noscript><a class="button" href="https://t.me/primebot_news" target="_blank" rel="noopener noreferrer">Канал PRIME ↗</a></div>
+</div></div>
+<div class="workspace-caption"><span>Никакой регистрации.</span><button class="plain-link" type="button" data-open-app hidden>На весь экран <span aria-hidden="true">↗</span></button></div>
 </section>
-
-<section id="engine" class="engine section" aria-labelledby="engine-title">
- <div class="wrap">
-  <div class="engine-heading reveal"><p class="eyebrow">02 / PRIME ENGINE</p><h2 id="engine-title">Рынок меняется.<br><span>Правила остаются.</span></h2></div>
-  <div class="engine-stage">
-   <div class="engine-node market-node"><div class="node-header"><span class="market-logo">M</span><span>market.csgo.com</span><span class="node-index">01</span></div><div class="market-spark" aria-hidden="true"><svg viewBox="0 0 260 100"><path class="spark-shadow" d="M0 72 24 63 40 69 65 38 91 54 112 35 137 56 161 27 180 44 204 17 231 30 260 12"/><path class="spark-line" d="M0 72 24 63 40 69 65 38 91 54 112 35 137 56 161 27 180 44 204 17 231 30 260 12"/></svg></div><span class="micro">ДВИЖЕНИЕ РЫНКА</span></div>
-   <div class="signal-track track-left" aria-hidden="true"><i></i></div>
-   <div class="engine-core"><div class="core-ring"></div><div class="core-ring ring-inner"></div><div class="core-center"><span class="brand-type" aria-hidden="true">PR<span>I</span>ME</span></div><span class="core-label micro">ТВОИ ПРАВИЛА / PRIME ENGINE</span></div>
-   <div class="signal-track track-right" aria-hidden="true"><i></i></div>
-   <div class="engine-node output-node"><div class="node-header"><svg class="icon mint" aria-hidden="true"><use href="#telegram"/></svg><span>Telegram</span><span class="node-index">03</span></div><span class="node-check"><svg class="icon" aria-hidden="true"><use href="#check"/></svg></span><strong>Важное.<br>Без лишнего.</strong><span class="micro">СОБЫТИЯ ПОД РУКОЙ</span></div>
-  </div>
-  <div class="engine-bottom"><p id="signal-status" aria-live="polite">Рынок / Правила / Уведомление</p><button type="button" class="text-button signal-button" hidden>Проследить сигнал <svg class="icon" aria-hidden="true"><use href="#arrow"/></svg></button></div>
- </div>
-</section>
-
-<section id="control" class="control section" aria-labelledby="control-title">
- <div class="wrap control-grid">
-  <div class="control-copy reveal"><p class="eyebrow">03 / ТВОИ ПРАВИЛА</p><h2 id="control-title">Точность.<br><span>Не случайность.</span></h2>
-   <div class="feature-tabs" role="tablist" aria-label="Возможности PRIME" aria-orientation="vertical">
-    <button type="button" id="tab-price" class="feature-tab active" role="tab" aria-selected="true" aria-controls="panel-price" tabindex="0"><span class="tab-number">01</span><span>Автоцена<small>Рынок меняется. Цена следует правилам.</small></span><span class="tab-arrow" aria-hidden="true">↗</span></button>
-    <button type="button" id="tab-limits" class="feature-tab" role="tab" aria-selected="false" aria-controls="panel-limits" tabindex="-1"><span class="tab-number">02</span><span>Контроль<small>Нижняя граница задаётся тобой.</small></span><span class="tab-arrow" aria-hidden="true">↗</span></button>
-    <button type="button" id="tab-events" class="feature-tab" role="tab" aria-selected="false" aria-controls="panel-events" tabindex="-1"><span class="tab-number">03</span><span>События<small>Нужные уведомления в Telegram.</small></span><span class="tab-arrow" aria-hidden="true">↗</span></button>
-   </div>
-  </div>
-  <div class="feature-stage">
-   <div id="panel-price" class="feature-panel price-panel active" role="tabpanel" aria-labelledby="tab-price" tabindex="0">
-    <div class="panel-kicker"><span>AUTO PRICE</span><svg class="icon" aria-hidden="true"><use href="#chart"/></svg></div>
-    <div class="price-visual"><span class="visual-title">Не вручную.<br><em>По правилам.</em></span>
-     <svg class="feature-chart" viewBox="0 0 600 280" role="img" aria-label="Схема: линия цены PRIME следует движению рынка в заданных границах"><defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#60f5b2" stop-opacity=".15"/><stop offset="1" stop-color="#60f5b2" stop-opacity="0"/></linearGradient></defs><path class="chart-grid" d="M0 65H600M0 135H600M0 205H600"/><path fill="url(#area)" d="M0 189 64 161 107 177 145 137 200 161 255 98 315 122 369 65 421 96 479 50 542 79 600 36V280H0Z"/><path class="chart-market" d="M0 171 64 135 107 146 145 113 200 137 255 71 315 96 369 44 421 71 479 23 542 54 600 13"/><path class="chart-prime" d="M0 189 64 161 107 177 145 137 200 161 255 98 315 122 369 65 421 96 479 50 542 79 600 36"/><circle cx="600" cy="36" r="5" fill="#60f5b2"/></svg>
-     <div class="chart-legend"><span><i></i> PRIME</span><span><i></i> РЫНОК</span></div>
-    </div><div class="panel-foot"><span>ДВИЖЕНИЕ / РЕАКЦИЯ</span><span>01 / 03</span></div>
-   </div>
-   <div id="panel-limits" class="feature-panel limits-panel" role="tabpanel" aria-labelledby="tab-limits" tabindex="0">
-    <div class="panel-kicker"><span>PRICE CONTROL</span><svg class="icon" aria-hidden="true"><use href="#shield"/></svg></div><div class="shield-visual"><div class="shield-orbit"></div><svg class="large-shield" viewBox="0 0 160 190" aria-hidden="true"><defs><linearGradient id="shield-metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d5e4df"/><stop offset=".38" stop-color="#7a8584"/><stop offset=".4" stop-color="#1e2a26"/><stop offset=".82" stop-color="#384c42"/><stop offset="1" stop-color="#88c9a5"/></linearGradient></defs><path d="M80 8 149 34V91C149 132 116 162 80 182 44 162 11 132 11 91V34Z" fill="url(#shield-metal)" stroke="#99bbae" stroke-width="1"/><path d="M80 25 133 45V91C133 122 108 148 80 165 52 148 27 122 27 91V45Z" fill="#111c17" stroke="#52695c"/><path d="m52 90 19 20 39-43" fill="none" stroke="#72ffc1" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="limit-line"><span>ТВОЙ МИНИМУМ</span></div></div><p class="limit-copy">Чужой демпинг.<br><span>Не твои правила.</span></p><div class="panel-foot"><span>ГРАНИЦА / КОНТРОЛЬ</span><span>02 / 03</span></div>
-   </div>
-   <div id="panel-events" class="feature-panel events-feature" role="tabpanel" aria-labelledby="tab-events" tabindex="0">
-    <div class="panel-kicker"><span>TELEGRAM EVENTS</span><svg class="icon" aria-hidden="true"><use href="#telegram"/></svg></div><div class="feature-notifications"><div class="notification offset"><span class="notification-icon"><svg class="icon" aria-hidden="true"><use href="#refresh"/></svg></span><div><span class="micro">PRIME / АВТОЦЕНА</span><strong>В заданных границах.</strong></div></div><div class="notification"><span class="notification-icon"><svg class="icon" aria-hidden="true"><use href="#check"/></svg></span><div><span class="micro">PRIME / СОБЫТИЕ</span><strong>Предмет продан</strong><p>AWP / Exothermic</p></div></div></div><p class="event-feature-copy">Только то,<br><span>что важно тебе.</span></p><div class="panel-foot"><span>СОБЫТИЕ / УВЕДОМЛЕНИЕ</span><span>03 / 03</span></div>
-   </div>
-  </div>
- </div>
-</section>
-
-<section id="telegram-section" class="telegram-section section" aria-labelledby="telegram-title">
- <div class="wrap telegram-grid">
-  <div class="telegram-visual reveal"><div class="telegram-halo" aria-hidden="true"></div><div class="messenger"><div class="messenger-top"><span class="telegram-back" aria-hidden="true">‹</span><span class="messenger-avatar">P</span><div><strong>PRIME</strong><span>Уведомления</span></div><svg class="icon" aria-hidden="true"><use href="#telegram"/></svg></div><div class="messenger-content"><span class="message-date">PRIME MARKET CENTER</span><div class="message message-one"><span class="message-type">СДЕЛКИ</span><strong>Предмет продан</strong><p>AWP / Exothermic</p><div class="message-detail"><span>Сумма</span><b>220.82 ₽</b></div><div class="message-detail"><span>Получено</span><b>209.77 ₽</b></div><span class="message-time">22.09 / 13:43</span></div><div class="message message-two"><span class="message-type">КОНТРОЛЬ</span><strong>Твои условия.<br>Твои уведомления.</strong><span class="message-check" aria-hidden="true">✓✓</span></div><div class="messenger-toolbar"><span>Торговля в одном месте</span><svg class="icon" aria-hidden="true"><use href="#shield"/></svg></div></div></div><span class="telegram-caption micro">MARKET CENTER / TELEGRAM</span></div>
-  <div class="telegram-copy reveal"><p class="eyebrow">04 / ВСЕГДА РЯДОМ</p><h2 id="telegram-title">Не у экрана.<br><span>На связи.</span></h2><p>Важное из PRIME.<br>Там, где ты уже есть.</p><a href="https://t.me/primebot_news" class="button primary" target="_blank" rel="noopener noreferrer">PRIME в Telegram <svg class="icon" aria-hidden="true"><use href="#diagonal"/></svg><span class="sr-only">, в новой вкладке</span></a></div>
- </div>
+<section class="possibilities wrap" id="possibilities">
+<div class="section-heading"><h2>Меньше действий.<br><span>Больше контроля.</span></h2></div>
+<div class="spotlight">
+<div class="spotlight-tabs" role="tablist" aria-label="Возможности PRIME"><button type="button" role="tab" aria-selected="true" aria-controls="feature-panel" id="feature-price" data-feature="products" tabindex="0"><span>Цены</span><span aria-hidden="true">↗</span></button><button type="button" role="tab" aria-selected="false" aria-controls="feature-panel" id="feature-analytics" data-feature="analytics" tabindex="-1"><span>Аналитика</span><span aria-hidden="true">↗</span></button><button type="button" role="tab" aria-selected="false" aria-controls="feature-panel" id="feature-settings" data-feature="settings" tabindex="-1"><span>Настройки</span><span aria-hidden="true">↗</span></button></div>
+<div id="feature-panel" class="spotlight-content" role="tabpanel" aria-labelledby="feature-price" tabindex="0">
+<div class="feature-copy"><h3 id="feature-title">Цена меняется.<br>Контроль остаётся.</h3><p id="feature-description">Лимиты и история для каждого предмета.</p><button class="plain-link" id="feature-open" data-open-app="products" type="button" hidden>Открыть товары <span aria-hidden="true">↗</span></button></div>
+<div class="feature-art" id="feature-art" aria-hidden="true"><div class="visual-price"><span>AWP | Black Nile</span><strong>229,44 <small>₽</small></strong><svg viewBox="0 0 420 140"><path class="graph-grid" d="M0 40H420M0 85H420M0 130H420"/><path class="graph-boundary" d="M0 116H420"/><path class="graph-stroke" d="M0 100C40 100 40 80 80 80S120 96 155 77 200 72 230 55 270 59 310 35 370 35 420 15"/></svg><span class="visual-limit"><span>Твоя нижняя граница</span><b>Под контролем</b></span></div></div>
+</div>
+</div></section>
+<section class="telegram-section wrap" id="telegram">
+<div class="telegram-art" aria-hidden="true"><div class="message-stack"><div class="message message-back"><span class="telegram-icon">↗</span><div><strong>PRIME</strong><p>Всё под контролем.</p></div></div><div class="message"><span class="telegram-icon">↗</span><div><strong>Предмет продан <span>13:36</span></strong><p>AWP | Ice Coaled</p><div class="message-amount"><b>354,79 ₽</b><span>Получено 337,05 ₽</span></div></div><span class="message-check">✓</span></div></div><div class="telegram-circle"></div></div>
+<div class="telegram-copy"><h2>Не у экрана.<br><span>Но в курсе.</span></h2><p>События твоей торговли в Telegram.</p><a class="button button-mint" href="https://t.me/primebot_news" target="_blank" rel="noopener noreferrer">Перейти в канал <span aria-hidden="true">↗</span></a></div>
 </section>
 </main>
-<footer id="finale" class="footer" aria-labelledby="footer-title">
- <div class="footer-frame wrap">
-  <p class="eyebrow footer-eyebrow">05 / ТВОЙ СЛЕДУЮЩИЙ ХОД</p>
-  <div class="footer-wordmark" aria-hidden="true">PRIME</div>
-  <div class="object-scene footer-scene" data-scene="footer" aria-hidden="true"><img class="scene-fallback" src="./assets/prime-mark.svg" alt="" width="600" height="600"><canvas></canvas></div>
-  <div class="footer-action"><h2 id="footer-title">Меньше рутины.<br>Больше тебя.</h2><a href="https://t.me/primebot_news" class="button primary" target="_blank" rel="noopener noreferrer">Открыть Telegram <svg class="icon" aria-hidden="true"><use href="#diagonal"/></svg><span class="sr-only">, в новой вкладке</span></a></div>
-  <div class="footer-bottom"><a class="brand" href="#top" aria-label="PRIME, в начало"><span class="brand-type" aria-hidden="true">PR<span>I</span>ME</span></a><div><a href="https://t.me/primebot_news" target="_blank" rel="noopener noreferrer">Telegram <svg class="icon" aria-hidden="true"><use href="#diagonal"/></svg></a><a href="https://github.com/r1skme/Prime-Bot-Site" target="_blank" rel="noopener noreferrer">GitHub <svg class="icon" aria-hidden="true"><use href="#diagonal"/></svg></a><a href="https://market.csgo.com/" target="_blank" rel="noopener noreferrer">market.csgo.com <svg class="icon" aria-hidden="true"><use href="#diagonal"/></svg></a></div><span>PRIME / 2026</span></div>
- </div>
-</footer>
-<dialog class="interface-dialog" aria-labelledby="dialog-title"><div class="dialog-header"><h2 id="dialog-title">PRIME Market Center</h2><button class="close-dialog icon-button" type="button" aria-label="Закрыть интерфейс"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></div><div class="dialog-content"></div><p class="dialog-caption">Экран приложения / 22.09</p></dialog>
-</body>
-</html>
+<footer class="site-footer"><div class="footer-top wrap"><h2>Твои скины.<br>Твои правила.</h2><button class="button button-light" type="button" data-open-app="overview" hidden>Открыть PRIME <span aria-hidden="true">↗</span></button></div><div class="footer-brand" aria-hidden="true">PRIME</div><div class="footer-bottom wrap"><span>© PRIME 2026</span><div><a href="https://t.me/primebot_news" target="_blank" rel="noopener noreferrer">Telegram ↗</a><a href="https://github.com/r1skme/Prime-Bot-Site" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="#top">Наверх ↑</a></div></div></footer>
+<dialog id="app-dialog" aria-label="PRIME Market Center"><div id="app-holder"></div></dialog>
+<dialog id="workspace-dialog" class="workspace-dialog" aria-labelledby="workspace-dialog-title"><div id="workspace-dialog-content"></div></dialog>
+</body></html>
