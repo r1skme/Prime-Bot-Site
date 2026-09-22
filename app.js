@@ -1,218 +1,99 @@
-/* ═══════════════════════════════════════════
-   Prime Market Landing — JS
-   Particles, counters, scroll reveals
-   ═══════════════════════════════════════════ */
+/* PRIME / Only progressive enhancement and a local, deterministic simulation.
+   No backend calls, tracking, key inputs, dependencies or persistent storage. */
+(() => {
+  'use strict';
+  document.documentElement.classList.add('js');
 
-// ═══════════ PARTICLES ═══════════
-(function initParticles() {
-  const canvas = document.getElementById('particles');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-
-  let w, h;
-  const particles = [];
-  const PARTICLE_COUNT = 60;
-
-  function resize() {
-    const dpr = window.devicePixelRatio || 1;
-    w = window.innerWidth;
-    h = window.innerHeight;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-    ctx.scale(dpr, dpr);
-  }
-
-  function createParticle() {
-    return {
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 1.5 + 0.5,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      alpha: Math.random() * 0.3 + 0.05,
+  const menuButton = document.querySelector('.menu-toggle');
+  const nav = document.getElementById('main-nav');
+  if (menuButton && nav) {
+    const closeMenu = (restoreFocus = false) => {
+      menuButton.setAttribute('aria-expanded', 'false');
+      menuButton.setAttribute('aria-label', 'Открыть меню');
+      nav.classList.remove('is-open');
+      if (restoreFocus) menuButton.focus();
     };
-  }
-
-  function init() {
-    resize();
-    particles.length = 0;
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push(createParticle());
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-
-    // Draw particles
-    for (const p of particles) {
-      p.x += p.vx;
-      p.y += p.vy;
-
-      if (p.x < -10) p.x = w + 10;
-      if (p.x > w + 10) p.x = -10;
-      if (p.y < -10) p.y = h + 10;
-      if (p.y > h + 10) p.y = -10;
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(162, 155, 254, ${p.alpha})`;
-      ctx.fill();
-    }
-
-    // Draw connections
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 150) {
-          const alpha = (1 - dist / 150) * 0.06;
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(108, 92, 231, ${alpha})`;
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
-        }
-      }
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  window.addEventListener('resize', () => {
-    resize();
-  });
-
-  init();
-  draw();
-})();
-
-// ═══════════ SCROLL REVEAL ═══════════
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
+    menuButton.addEventListener('click', () => {
+      const open = menuButton.getAttribute('aria-expanded') !== 'true';
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+      nav.classList.toggle('is-open', open);
     });
-  },
-  { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-);
-
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-// ═══════════ NAV SCROLL ═══════════
-window.addEventListener('scroll', () => {
-  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
-});
-
-// ═══════════ COUNTER ANIMATION ═══════════
-function animateCounter(el, target, suffix = '', duration = 2000) {
-  const start = performance.now();
-  const initial = 0;
-
-  function tick(now) {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-    const current = Math.floor(initial + (target - initial) * eased);
-    el.textContent = current.toLocaleString('ru-RU') + suffix;
-    if (progress < 1) requestAnimationFrame(tick);
-  }
-
-  requestAnimationFrame(tick);
-}
-
-// Trigger counters on scroll
-const statsObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !entry.target.dataset.counted) {
-        entry.target.dataset.counted = 'true';
-        const el = entry.target;
-        const customVal = el.dataset.val;
-        const target = customVal ? parseFloat(customVal) : parseInt(el.dataset.target);
-        const suffix = el.dataset.suffix || '';
-
-        if (customVal) {
-          // Float animation
-          const start = performance.now();
-          const duration = 2000;
-          function tick(now) {
-            const elapsed = now - start;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            const current = (target * eased).toFixed(1);
-            el.textContent = current + suffix;
-            if (progress < 1) requestAnimationFrame(tick);
-          }
-          requestAnimationFrame(tick);
-        } else {
-          animateCounter(el, target, suffix);
-        }
-      }
+    nav.addEventListener('click', event => {
+      if (event.target.closest('a')) closeMenu();
     });
-  },
-  { threshold: 0.5 }
-);
-
-document.querySelectorAll('.stat-big:not(.static-stat)').forEach(el => statsObserver.observe(el));
-
-// ═══════════ HERO COUNTERS ═══════════
-// Animate the mock dashboard counters on load
-setTimeout(() => {
-  const lotsEl = document.getElementById('counter-lots');
-  const tradesEl = document.getElementById('counter-trades');
-  if (lotsEl) animateCounter(lotsEl, 47, '', 1800);
-  if (tradesEl) animateCounter(tradesEl, 12, '', 1500);
-}, 800);
-
-// ═══════════ SMOOTH SCROLL ═══════════
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth' });
-    }
-  });
-});
-
-// ═══════════ COUNTDOWN TIMER ═══════════
-(function initCountdown() {
-  // Launch date: 30 days from now (adjust as needed)
-  const launchDate = new Date();
-  launchDate.setDate(launchDate.getDate() + 30);
-  launchDate.setHours(12, 0, 0, 0);
-
-  const daysEl = document.getElementById('cd-days');
-  const hoursEl = document.getElementById('cd-hours');
-  const minsEl = document.getElementById('cd-mins');
-  const secsEl = document.getElementById('cd-secs');
-
-  if (!daysEl) return;
-
-  function pad(n) { return String(n).padStart(2, '0'); }
-
-  function update() {
-    const now = new Date();
-    const diff = Math.max(0, launchDate - now);
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const secs = Math.floor((diff % (1000 * 60)) / 1000);
-
-    daysEl.textContent = pad(days);
-    hoursEl.textContent = pad(hours);
-    minsEl.textContent = pad(mins);
-    secsEl.textContent = pad(secs);
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') closeMenu(true);
+    });
+    document.addEventListener('click', event => {
+      if (!nav.contains(event.target) && !menuButton.contains(event.target)) closeMenu();
+    });
+    const desktopQuery = window.matchMedia('(min-width: 621px)');
+    desktopQuery.addEventListener('change', event => { if (event.matches) closeMenu(); });
   }
 
-  update();
-  setInterval(update, 1000);
+  const year = document.getElementById('year');
+  if (year) year.textContent = String(new Date().getFullYear());
+
+  const slider = document.getElementById('price-floor');
+  const price = document.getElementById('demo-price');
+  const output = document.getElementById('floor-output');
+  const pill = document.getElementById('state-pill');
+  const explainer = document.getElementById('demo-explainer');
+  const buttons = [...document.querySelectorAll('[data-scenario]')];
+  if (!slider || !price || !output || !pill || !explainer) return;
+
+  // Illustrative, immutable inputs. These are NOT market quotes or bot results.
+  const scenarios = Object.freeze({normal: {competitor: 1280}, dump: {competitor: 890}, rise: {competitor: 1590}});
+  const previousPrice = 1480;
+  const step = 1;
+  const rubles = new Intl.NumberFormat('ru-RU', {maximumFractionDigits: 0});
+  const money = value => `${rubles.format(value)} ₽`;
+  const chartY = value => Math.max(8, Math.min(103, 103 - (value - 700) / 10));
+  let scenario = 'normal';
+
+  function render() {
+    const minimum = Math.min(1450, Math.max(900, Number(slider.value) || 1100));
+    const competitor = scenarios[scenario].competitor;
+    const candidate = competitor - step;
+    // A below-minimum offer never drags the example's existing price down.
+    const blocked = candidate < minimum;
+    const result = blocked ? previousPrice : candidate;
+    output.textContent = money(minimum);
+    slider.setAttribute('aria-valuetext', money(minimum));
+    price.replaceChildren(document.createTextNode(`${rubles.format(result)} `));
+    const currency = document.createElement('span');
+    currency.textContent = '₽';
+    price.append(currency);
+    pill.classList.toggle('is-protected', blocked);
+    pill.textContent = blocked ? 'Лимит защищён ↗' : 'В рамках лимита ↗';
+    explainer.textContent = blocked
+      ? `Конкурент: ${money(competitor)}. Ниже твоего минимума. Сохраняем предыдущую цену ${money(previousPrice)}.`
+      : `Конкурент: ${money(competitor)}. Ставим на ${money(step)} ниже, не нарушая твой минимум.`;
+    buttons.forEach(button => {
+      const active = button.dataset.scenario === scenario;
+      button.setAttribute('aria-pressed', String(active));
+      button.classList.toggle('active', active);
+    });
+    // Shared history, with a deliberately illustrative final market event.
+    const history = 'M0 30 45 26 90 36 135 21 180 31 225 22 270 34';
+    const line = `${history} 325 ${chartY(result)} 380 ${chartY(result)} 440 ${chartY(result)}`;
+    document.getElementById('price-line')?.setAttribute('d', line);
+    document.getElementById('chart-area')?.setAttribute('d', `${line}V112H0Z`);
+    document.getElementById('market-line')?.setAttribute('d', `M0 41 45 31 90 43 135 28 180 43 225 30 270 36 325 ${chartY(competitor)} 380 ${chartY(competitor)} 440 ${chartY(competitor)}`);
+    document.getElementById('price-point')?.setAttribute('cy', String(chartY(result)));
+    const floorLine = document.getElementById('floor-line');
+    floorLine?.setAttribute('y1', String(chartY(minimum)));
+    floorLine?.setAttribute('y2', String(chartY(minimum)));
+  }
+  buttons.forEach(button => button.addEventListener('click', () => {
+    if (Object.hasOwn(scenarios, button.dataset.scenario)) {
+      scenario = button.dataset.scenario;
+      render();
+    }
+  }));
+  slider.disabled = false;
+  buttons.forEach(button => { button.disabled = false; });
+  slider.addEventListener('input', render);
+  render();
 })();
