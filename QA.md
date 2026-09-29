@@ -1,17 +1,11 @@
-# PRIME Flow 5 - проверка
+# Flow 6 verification
 
-145 локальных проверок пройдены, 0 ошибок. Подробный QA-results.json и tests/verify.py включены в архив этой версии, переданный владельцу.
+128/128 automated checks passed in Chromium using the exact production CSS and JavaScript embedded as local data URLs. Results are in the accompanying source archive's `QA-results.json`; the executable check is `tests/verify.py` in that archive.
 
-Проверены пути и якоря шести страниц, уникальные ID, заголовки, изменение геометрии Canvas до пользовательских действий, hover кнопки, переключатель иллюстрации, тарифы, поиск, категории и раскрытие FAQ, переходы автономного HTML-просмотра и повторный запуск главной.
+Checked: widths 360, 390, 768, 1440, 2560; all six pages; actual change of SVG path geometry over time; absence of Canvas; separated strands; Telegram hover and stable label; mobile menu and Escape; native FAQ expansion; text search; comparison toggle; all local links and anchors; reduced motion; no JavaScript; DPR 2; hidden loader after readiness; resource-error recovery.
 
-Движение подтверждено двумя снимками Canvas и изменением вертикального центра непрозрачных пикселей в пяти колонках. Это проверка изменения геометрии во времени, а не только наличия animation в CSS. Также проверено изменение transform запасного SVG без JavaScript.
+Loader testing used delayed local insertion of the actual stylesheet/script, followed by their actual load events. It verified a visible pending state, the change from stylesheet to script, and immediate release when settled. Failure callbacks were simulated deliberately. This is not a live slow-network measurement.
 
-Проверены ширины 320, 360, 390, 430, 768, 1024, 1440, 1920, 2560 px, мобильное меню, режим уменьшенного движения и вариант без JavaScript. В прогонах не зарегистрировано ошибок JavaScript.
+HTTP navigation in the container's Chromium was denied by its administrator (`ERR_BLOCKED_BY_ADMINISTRATOR`), so rendering used `set_content` and embedded assets rather than bypassing that restriction. The public domain also returned HTTP 502 to the web reader before publication. Neither issue is evidence of a fault on the user's device. Production publishing must be checked separately through GitHub Actions.
 
-## Ограничения
-
-Среда запрещает браузерную навигацию file:// (ERR_BLOCKED_BY_ADMINISTRATOR). Политика не изменялась. Playwright/Chromium рендерил точные байты автономного HTML через page.set_content. Это не проверка двойного клика на устройстве владельца и не тест живого домена. Отдельно проверены статические относительные ссылки многостраничного исходника.
-
-Визуально просмотрены локальные desktop/mobile рендеры. Safari/WebKit, Firefox, реальные телефоны, экранные дикторы и будущий сервер не тестировались. Формальная сертификация доступности не проводилась. Системное уменьшение движения смягчает, но не останавливает эффекты полностью.
-
-Старый tests/smoke.py проверяет прежний Market Center и не является прогоном Flow 5.
+Screenshots of desktop, mobile, product cards, plans and pending-resource loader were inspected. No benchmark guarantee for the user's GPU, refresh rate or browser is made.

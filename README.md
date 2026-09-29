@@ -1,26 +1,26 @@
-# PRIME / Flow 5
+# PRIME / Flow 6
 
-Новая дизайн-версия на HTML, CSS и JavaScript. Не изображение и не торговый кабинет.
+Static multi-page frontend. Open `index.html` or serve this directory. No build step, npm dependencies, remote fonts, account database or payment integration.
 
-## Что изменено
+## Changes
 
-- Заголовок: «Торгуй скинами. Не своим временем.»
-- Непрерывно деформируемая Canvas-лента с мягким световым проходом. Запуск без клика, наведения и прокрутки. CSS/SVG-вариант остаётся анимированным без JavaScript.
-- Объёмная основная кнопка, наклонная сдвигаемая поверхность вторичных кнопок, реакции меню, Telegram, FAQ и переключателей. Основа - Uiverse-референсы владельца, см. THIRD_PARTY_NOTICES.md.
-- Вместо трёх курсоров - интерактивная схема рынка и своего предложения. Переключатель управляет только иллюстрацией, а не настоящим ботом.
-- Вместо пустого перехода - Free / PRIME / Max с проектируемыми различиями. Тарифы помечены как планируемые. Цены и точные лимиты не придуманы, оплаты и регистрации нет.
-- Нижний крупный PRIME с зелёным светом сохранён. Повторяющиеся слоганы убраны.
+The wave uses twelve smooth, ordered SVG Bezier paths and a low-opacity continuous band instead of the dense, low-resolution Canvas renderer. Geometry starts changing immediately and pauses offscreen. There are no intersecting hairlines or moving raster surface. OS reduced motion retains soft light and a still shape.
 
-## Файлы и запуск
+All calls to action share one component, with consistent radius, inset surface, hover and keyboard focus. A mint variant communicates primary priority, not a separate button design. Telegram uses a plane animation without hiding the label, claiming that a message was sent, or delaying the link.
 
-`index.html`, `product.html`, `tariffs.html`, `help.html`, `information.html`, `404.html` используют `assets/prime.css` и `assets/prime.js`. Пути относительные. Откройте index.html вместе с папкой assets либо запустите `python -m http.server 8080` из корня.
+The ambiguous interactive price experiment and its explanatory footnotes are removed. Three semantic cards describe the product's actual purpose. Prototype disclaimers are removed from public text. The necessary availability statement remains on the future tariff lineup; prices, limits and purchase buttons are not fabricated.
 
-Автономный HTML-просмотр, скрипт новых проверок и подробный отчёт включены в архив Flow 5, переданный владельцу. Старые style.css, script.js, workspace и tests/smoke.py сохранены как прежние файлы репозитория, но новая главная их не использует. Старый smoke-тест относится к Market Center, а не к Flow 5.
+## Real loading
 
-Код не использует сетевые запросы к рынку, cookie, browser storage, удалённые шрифты и аналитику. Схемы не содержат реальных котировок, продаж и аккаунтов. Ссылки Telegram ведут в ранее указанный канал.
+The small inline bootstrap tracks stylesheet and application-script `load`/`error`, and font readiness if a font really is loading. The overlay can appear after 180 ms only while something is still pending. It disappears as soon as resources settle, with no minimum duration or fake percentages. The displayed word refers to the pending resource. There is no loader for an in-memory preview page transition. Without JavaScript, content and navigation remain available. A failed resource or 12-second watchdog releases the page with an error notice rather than pretending success or blocking forever.
 
-Кадры Canvas ограничены 40 в секунду, коэффициент разрешения 1.6. Скрытая вкладка и находящаяся вне экрана лента не перерисовываются. Системное уменьшение движения замедляет и смягчает эффект. Текст остаётся читаемым без анимации.
+The screen cannot appear before the browser has received the initial HTML. This is a page-resource loader, not a measurement of the connection before HTML arrives.
 
-CNAME и .nojekyll сохранены. DNS и настройки хостинга не меняются. Состояние развёртывания проверяется отдельно от наличия коммита. Дизайн-версия закрыта от индексации; это не коммерческий запуск.
+## Files
 
-Реквизиты ИП, действующие условия продажи и юридические документы нужно подготовить с реальными данными перед продажами. Они не заменены выдуманным текстом.
+- `index.html`, `product.html`, `tariffs.html`, `help.html`, `information.html`, `404.html`: static pages.
+- `assets/prime.css`, `assets/prime.js`: shared components and motion.
+- `THIRD_PARTY_NOTICES.md`: supplied Uiverse references and license.
+- `QA.md`: tested scope and environment limits.
+
+CNAME, Pages source, DNS, robots policy and external service settings are unchanged. Only code is published. There are no registration, payment or trading actions.

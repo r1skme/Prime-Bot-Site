@@ -1,25 +1,19 @@
-# PRIME Flow 5 - visual references and attribution
+# PRIME 6 - visual references
 
-The owner supplied Uiverse snippets as the visual basis of this revision. Adaptations use scoped component selectors and stable labels.
+The owner supplied Uiverse source snippets for adaptation. Current components use:
 
-- marcelodolza: layered/bevelled primary button and hover outline; no letter-wave or false sent state.
-- mrhyddenn: primary button light sweep.
-- cssbuttons-io: restrained mint glow, not the strong purple halo.
-- adamgiebl: angled sliding cover on secondary actions.
-- neerajbaniwal: clipped-text shine in the lower PRIME wordmark.
-- kennyotsu: rolling verb inside the explanatory diagram, not the main headline.
-- nazar-gavrylyk: navigation-item feedback and mobile menu surface.
-- Itskrish01 and satyamchaudharydev: social tile surface and icon transition ideas; unrelated brands omitted.
-- TimTrayler: toggle styling with keyboard-accessible input.
-- ashif_6672: grid-row expansion adapted from a tree to the FAQ accordion.
-- ilkhoeri: typing adapted to an illustrative notification; no terminal.
-- PriyanshuGupta28: soft edge-mask idea for moving elements.
+- marcelodolza: the inset/bevelled surface, restrained hover treatment and paper-plane motion, scoped to `.button-link` and `.button-telegram`. No false sent state, letter disappearance, delayed navigation or global button selector.
+- kennyotsu: clipped vertical word transition in the loader. Words change only when the actual pending resource changes, not by a fake timed sequence.
+- mrhyddenn: a gentle hover sheen, used consistently across action buttons.
+- neerajbaniwal: the lower PRIME text shine retained from the preceding revision.
+- TimTrayler: the keyboard-accessible comparison switch retained in the tariff page.
+- nazar-gavrylyk: quiet navigation surface feedback.
 
-The Canvas ribbon renderer, no-data price diagram and tier composition are new PRIME implementation. The oversized italic lower PRIME and green underlighting preserve the owner's earlier preferred design. Unrelated cubes, spinners, star bursts and utility controls are not inserted without a product purpose. No third-party font files or external runtime are bundled.
+The SVG wave, local resource-readiness logic, semantic product cards and text are PRIME-specific implementation. Unused showcase effects are not inserted just to use them. No font files, remote runtime, analytics, market data or fake account interface is included.
 
-Source collection: https://github.com/uiverse-io/galaxy
+The previous revision's MIT notice is retained below. Original source collection: https://github.com/uiverse-io/galaxy
 
-## MIT License
+## MIT License (Uiverse)
 
 Copyright (c) 2023 Uiverse.io
 
